@@ -1,0 +1,1762 @@
+!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_59b92bc093897049de03bb19d06aa8dd {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+<div style="position: fixed; 
+            bottom: 18px; left: 18px; width: 360px; z-index: 9999;
+            background: rgba(255,255,255,0.95); padding: 12px 12px; 
+            border-radius: 14px; box-shadow: 0 10px 26px rgba(0,0,0,0.28);
+            font-family: Arial;">
+  <div style="font-size: 15px; font-weight: 900; margin-bottom: 6px;">
+    Akkumulátoripari térkép (HU) – 2026.02.11
+  </div>
+  <div style="font-size: 12px; color:#333; margin-bottom: 8px;">
+    Rétegek: jobb felül. Basemap: választható (OSM / domborzat / műhold).
+  </div>
+  <div style="display:flex; align-items:center; margin:6px 0;">
+    <span style="display:inline-block; width:12px; height:12px; background:#d9534f; border-radius:3px; margin-right:8px;"></span>
+    <span><b>Cella-gyár</b></span>
+  </div>
+  <div style="display:flex; align-items:center; margin:6px 0;">
+    <span style="display:inline-block; width:12px; height:12px; background:#337ab7; border-radius:3px; margin-right:8px;"></span>
+    <span><b>Beszállító/anyag</b></span>
+  </div>
+  <div style="display:flex; align-items:center; margin:6px 0;">
+    <span style="display:inline-block; width:12px; height:12px; background:#5cb85c; border-radius:3px; margin-right:8px;"></span>
+    <span><b>Hulladék/újrahaszn.</b></span>
+  </div>
+  <div style="display:flex; align-items:center; margin:6px 0;">
+    <span style="display:inline-block; width:12px; height:12px; background:#f0ad4e; border-radius:3px; margin-right:8px;"></span>
+    <span><b>Modul/pack</b></span>
+  </div>
+  <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08); font-size: 12px;">
+    <b>Plusz rétegek:</b> „Vizek / vízbázis” és „Lakosság-buborékok”.
+  </div>
+  <div style="font-size: 11px; color:#666; margin-top:6px;">
+    Megjegyzés: a vízréteg vázlatos (fő folyók/tavak), a buborékok lakossága kerekített becslés.
+  </div>
+</div>
+    
+<div style="position: fixed; 
+            top: 14px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; background: rgba(0,0,0,0.74);
+            color: white; padding: 10px 14px; border-radius: 999px;
+            font-family: Arial; font-size: 14px; font-weight: 800;
+            letter-spacing: 0.2px;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.28);">
+  Magyarország – akkumulátoripari üzemek + vizek + lakosság
+</div>
+    
+            <div class="folium-map" id="map_59b92bc093897049de03bb19d06aa8dd" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_59b92bc093897049de03bb19d06aa8dd = L.map(
+                "map_59b92bc093897049de03bb19d06aa8dd",
+                {
+                    center: [47.2, 19.5],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 7,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+            L.control.scale().addTo(map_59b92bc093897049de03bb19d06aa8dd);
+
+            
+
+        
+    
+            var tile_layer_fea502f2133216f40b6010620550115d = L.tileLayer(
+                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"http://cartodb.com/attributions\"\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca href =\"http://cartodb.com/attributions\"\u003eattributions\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var tile_layer_cb70d63d7c59a128f03746efa2d18f4d = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var tile_layer_b71997be00e7535c42ce4b9f739a3797 = L.tileLayer(
+                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"http://cartodb.com/attributions\"\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca href =\"http://cartodb.com/attributions\"\u003eattributions\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var tile_layer_db8cef68a81ea6458193cf1ce6147a15 = L.tileLayer(
+                "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                {"attribution": "OpenTopoMap", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var tile_layer_70fff39c53a424d31bd8a1bfdfdb3170 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {"attribution": "Esri", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var feature_group_43db20f03e440113c8e3a5499db56557 = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var marker_714b2ab935c970fcd1073ccb09d308a3 = L.marker(
+                [47.68, 19.13],
+                {}
+            ).addTo(feature_group_43db20f03e440113c8e3a5499db56557);
+        
+    
+            var icon_d8203df9a03f2815bfbe4368bccff0ca = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_714b2ab935c970fcd1073ccb09d308a3.setIcon(icon_d8203df9a03f2815bfbe4368bccff0ca);
+        
+    
+        var popup_291a76edfeaa0c77cb1d3f89c84aed2e = L.popup({"maxWidth": 380});
+
+        
+            var html_5dd880d27c549f2ad940f20aa7807f47 = $(`<div id="html_5dd880d27c549f2ad940f20aa7807f47" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">1. Göd — Samsung SDI</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_291a76edfeaa0c77cb1d3f89c84aed2e.setContent(html_5dd880d27c549f2ad940f20aa7807f47);
+        
+
+        marker_714b2ab935c970fcd1073ccb09d308a3.bindPopup(popup_291a76edfeaa0c77cb1d3f89c84aed2e)
+        ;
+
+        
+    
+    
+            marker_714b2ab935c970fcd1073ccb09d308a3.bindTooltip(
+                `<div>
+                     1. Göd — Samsung SDI
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_200788349bbe0e0bbedf47ba431cf7da = L.marker(
+                [47.74, 18.12],
+                {}
+            ).addTo(feature_group_43db20f03e440113c8e3a5499db56557);
+        
+    
+            var icon_699fbb714cb25f580b513d0014acac1e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_200788349bbe0e0bbedf47ba431cf7da.setIcon(icon_699fbb714cb25f580b513d0014acac1e);
+        
+    
+        var popup_0dbeee2a035413096295808445ecd129 = L.popup({"maxWidth": 380});
+
+        
+            var html_8a8d549386446c2de975b7d6d51b8861 = $(`<div id="html_8a8d549386446c2de975b7d6d51b8861" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">2. Komárom — SK On Hungary</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_0dbeee2a035413096295808445ecd129.setContent(html_8a8d549386446c2de975b7d6d51b8861);
+        
+
+        marker_200788349bbe0e0bbedf47ba431cf7da.bindPopup(popup_0dbeee2a035413096295808445ecd129)
+        ;
+
+        
+    
+    
+            marker_200788349bbe0e0bbedf47ba431cf7da.bindTooltip(
+                `<div>
+                     2. Komárom — SK On Hungary
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_01c52325e1b35df0530b8de7b3730e13 = L.marker(
+                [47.16, 18.82],
+                {}
+            ).addTo(feature_group_43db20f03e440113c8e3a5499db56557);
+        
+    
+            var icon_76ad914897304f470c14d54af314ac6b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_01c52325e1b35df0530b8de7b3730e13.setIcon(icon_76ad914897304f470c14d54af314ac6b);
+        
+    
+        var popup_ec6b09cdda41c1cdaf367d253ba462f4 = L.popup({"maxWidth": 380});
+
+        
+            var html_e6496a2cac3e430ff3daa3def40e79c2 = $(`<div id="html_e6496a2cac3e430ff3daa3def40e79c2" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">3. Iváncsa — SK On Hungary</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_ec6b09cdda41c1cdaf367d253ba462f4.setContent(html_e6496a2cac3e430ff3daa3def40e79c2);
+        
+
+        marker_01c52325e1b35df0530b8de7b3730e13.bindPopup(popup_ec6b09cdda41c1cdaf367d253ba462f4)
+        ;
+
+        
+    
+    
+            marker_01c52325e1b35df0530b8de7b3730e13.bindTooltip(
+                `<div>
+                     3. Iváncsa — SK On Hungary
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1ccd940b6e69db4e8a233a53ebb180ea = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(feature_group_43db20f03e440113c8e3a5499db56557);
+        
+    
+            var icon_f9df07ff6bbfff136b1908eb812f9731 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_1ccd940b6e69db4e8a233a53ebb180ea.setIcon(icon_f9df07ff6bbfff136b1908eb812f9731);
+        
+    
+        var popup_63ed359f710062b43429f3a49b17b3a5 = L.popup({"maxWidth": 380});
+
+        
+            var html_f4db1c3bf2eb484cc928562376cb2540 = $(`<div id="html_f4db1c3bf2eb484cc928562376cb2540" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4. Debrecen — CATL</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_63ed359f710062b43429f3a49b17b3a5.setContent(html_f4db1c3bf2eb484cc928562376cb2540);
+        
+
+        marker_1ccd940b6e69db4e8a233a53ebb180ea.bindPopup(popup_63ed359f710062b43429f3a49b17b3a5)
+        ;
+
+        
+    
+    
+            marker_1ccd940b6e69db4e8a233a53ebb180ea.bindTooltip(
+                `<div>
+                     4. Debrecen — CATL
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_c97e3625424e7e11935c3e1a65dc92df = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(feature_group_43db20f03e440113c8e3a5499db56557);
+        
+    
+            var icon_20a41d3b91ea534994ef892059614f58 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_c97e3625424e7e11935c3e1a65dc92df.setIcon(icon_20a41d3b91ea534994ef892059614f58);
+        
+    
+        var popup_b5c21b399254e34b1b94b690fbf6db0b = L.popup({"maxWidth": 380});
+
+        
+            var html_bf16ad1730677079a2bec45a374b5936 = $(`<div id="html_bf16ad1730677079a2bec45a374b5936" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4.1. Debrecen — EVE / EVE Power</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> BMW-beszállító (cella)</div>     </div>     </div>`)[0];
+            popup_b5c21b399254e34b1b94b690fbf6db0b.setContent(html_bf16ad1730677079a2bec45a374b5936);
+        
+
+        marker_c97e3625424e7e11935c3e1a65dc92df.bindPopup(popup_b5c21b399254e34b1b94b690fbf6db0b)
+        ;
+
+        
+    
+    
+            marker_c97e3625424e7e11935c3e1a65dc92df.bindTooltip(
+                `<div>
+                     4.1. Debrecen — EVE / EVE Power
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_df0ea2ca3ab0c2971f4baa5f227b2848 = L.marker(
+                [47.95, 21.72],
+                {}
+            ).addTo(feature_group_43db20f03e440113c8e3a5499db56557);
+        
+    
+            var icon_eb3e7da8f82d9a26d59d7c34cc9aab67 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_df0ea2ca3ab0c2971f4baa5f227b2848.setIcon(icon_eb3e7da8f82d9a26d59d7c34cc9aab67);
+        
+    
+        var popup_8721530ba983f0b0b9263404d01464cb = L.popup({"maxWidth": 380});
+
+        
+            var html_2255579c24c8bb15fff7332026c044f0 = $(`<div id="html_2255579c24c8bb15fff7332026c044f0" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">5. Nyíregyháza — Sunwoda</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> EV-akkumulátor üzem (projekt)</div>     </div>     </div>`)[0];
+            popup_8721530ba983f0b0b9263404d01464cb.setContent(html_2255579c24c8bb15fff7332026c044f0);
+        
+
+        marker_df0ea2ca3ab0c2971f4baa5f227b2848.bindPopup(popup_8721530ba983f0b0b9263404d01464cb)
+        ;
+
+        
+    
+    
+            marker_df0ea2ca3ab0c2971f4baa5f227b2848.bindTooltip(
+                `<div>
+                     5. Nyíregyháza — Sunwoda
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var feature_group_026a6ec99d63e3e9833cf2423a605fb8 = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var marker_e052afe6fb7324220872dc381baaa9a4 = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(feature_group_026a6ec99d63e3e9833cf2423a605fb8);
+        
+    
+            var icon_b7155d24d3481e4f5d12cecd1e10e32f = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_e052afe6fb7324220872dc381baaa9a4.setIcon(icon_b7155d24d3481e4f5d12cecd1e10e32f);
+        
+    
+        var popup_91882b6da2e099b836e268c68b2c43e9 = L.popup({"maxWidth": 380});
+
+        
+            var html_cccdda561e9e4fcf758a34425d9d925a = $(`<div id="html_cccdda561e9e4fcf758a34425d9d925a" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4.2. Debrecen — Semcorp</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Szeparátorfólia / elválasztófilm</div>     </div>     </div>`)[0];
+            popup_91882b6da2e099b836e268c68b2c43e9.setContent(html_cccdda561e9e4fcf758a34425d9d925a);
+        
+
+        marker_e052afe6fb7324220872dc381baaa9a4.bindPopup(popup_91882b6da2e099b836e268c68b2c43e9)
+        ;
+
+        
+    
+    
+            marker_e052afe6fb7324220872dc381baaa9a4.bindTooltip(
+                `<div>
+                     4.2. Debrecen — Semcorp
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_86642b4cf341df793143d62a3bc95abb = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(feature_group_026a6ec99d63e3e9833cf2423a605fb8);
+        
+    
+            var icon_e60ce538327c616995ac2372324fb985 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_86642b4cf341df793143d62a3bc95abb.setIcon(icon_e60ce538327c616995ac2372324fb985);
+        
+    
+        var popup_7369278b5cc80aa1a1ca786a720e9d74 = L.popup({"maxWidth": 380});
+
+        
+            var html_e9d9c63c9d4f5fbaf5b3a74e86dc6c00 = $(`<div id="html_e9d9c63c9d4f5fbaf5b3a74e86dc6c00" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4.3. Debrecen — EcoPro BM</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Katódanyag gyártás</div>     </div>     </div>`)[0];
+            popup_7369278b5cc80aa1a1ca786a720e9d74.setContent(html_e9d9c63c9d4f5fbaf5b3a74e86dc6c00);
+        
+
+        marker_86642b4cf341df793143d62a3bc95abb.bindPopup(popup_7369278b5cc80aa1a1ca786a720e9d74)
+        ;
+
+        
+    
+    
+            marker_86642b4cf341df793143d62a3bc95abb.bindTooltip(
+                `<div>
+                     4.3. Debrecen — EcoPro BM
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_18cc53ee8764f475cfd0388a153eeb86 = L.marker(
+                [47.95, 21.72],
+                {}
+            ).addTo(feature_group_026a6ec99d63e3e9833cf2423a605fb8);
+        
+    
+            var icon_976be4530b317d4ddd1d553d3f0a4889 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_18cc53ee8764f475cfd0388a153eeb86.setIcon(icon_976be4530b317d4ddd1d553d3f0a4889);
+        
+    
+        var popup_c2b21792b83b0e6e573049645be9a06e = L.popup({"maxWidth": 380});
+
+        
+            var html_c003eca8f2de2f93fef512a5fc652ab0 = $(`<div id="html_c003eca8f2de2f93fef512a5fc652ab0" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">5.1. Nyíregyháza — W-Scope</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Szeparátorfólia (projekt)</div>     </div>     </div>`)[0];
+            popup_c2b21792b83b0e6e573049645be9a06e.setContent(html_c003eca8f2de2f93fef512a5fc652ab0);
+        
+
+        marker_18cc53ee8764f475cfd0388a153eeb86.bindPopup(popup_c2b21792b83b0e6e573049645be9a06e)
+        ;
+
+        
+    
+    
+            marker_18cc53ee8764f475cfd0388a153eeb86.bindTooltip(
+                `<div>
+                     5.1. Nyíregyháza — W-Scope
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_60bc1db760cb701a39ff00f9e95f6dcf = L.marker(
+                [47.57, 18.42],
+                {}
+            ).addTo(feature_group_026a6ec99d63e3e9833cf2423a605fb8);
+        
+    
+            var icon_b2302e0e83d0a571b7e84adb88932f3b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_60bc1db760cb701a39ff00f9e95f6dcf.setIcon(icon_b2302e0e83d0a571b7e84adb88932f3b);
+        
+    
+        var popup_4f625002c52febe374fd3faf8ca2e953 = L.popup({"maxWidth": 380});
+
+        
+            var html_ca0cf70ea9fe79ea9cf06ce0726e3c15 = $(`<div id="html_ca0cf70ea9fe79ea9cf06ce0726e3c15" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">6. Tatabánya — Soulbrain</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Elektrolit gyártás</div>     </div>     </div>`)[0];
+            popup_4f625002c52febe374fd3faf8ca2e953.setContent(html_ca0cf70ea9fe79ea9cf06ce0726e3c15);
+        
+
+        marker_60bc1db760cb701a39ff00f9e95f6dcf.bindPopup(popup_4f625002c52febe374fd3faf8ca2e953)
+        ;
+
+        
+    
+    
+            marker_60bc1db760cb701a39ff00f9e95f6dcf.bindTooltip(
+                `<div>
+                     6. Tatabánya — Soulbrain
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_8145ef3f8fd407f96334a26bcc0c28c2 = L.marker(
+                [47.55, 18.32],
+                {}
+            ).addTo(feature_group_026a6ec99d63e3e9833cf2423a605fb8);
+        
+    
+            var icon_ebee0d1359768d50cf176b85c1095a48 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_8145ef3f8fd407f96334a26bcc0c28c2.setIcon(icon_ebee0d1359768d50cf176b85c1095a48);
+        
+    
+        var popup_59aba9fd82a0e75c2ea236c2e1a6d255 = L.popup({"maxWidth": 380});
+
+        
+            var html_61a07f0f55b36607fd37549e8e510010 = $(`<div id="html_61a07f0f55b36607fd37549e8e510010" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">6.1. Környe — Lotte Aluminium</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Áramgyűjtő fólia (telephely/térség)</div>     </div>     </div>`)[0];
+            popup_59aba9fd82a0e75c2ea236c2e1a6d255.setContent(html_61a07f0f55b36607fd37549e8e510010);
+        
+
+        marker_8145ef3f8fd407f96334a26bcc0c28c2.bindPopup(popup_59aba9fd82a0e75c2ea236c2e1a6d255)
+        ;
+
+        
+    
+    
+            marker_8145ef3f8fd407f96334a26bcc0c28c2.bindTooltip(
+                `<div>
+                     6.1. Környe — Lotte Aluminium
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_89c2606685521469f8ef8a6e5db65fef = L.marker(
+                [47.41, 18.82],
+                {}
+            ).addTo(feature_group_026a6ec99d63e3e9833cf2423a605fb8);
+        
+    
+            var icon_443e2a1c219a4830f474c355372029ce = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_89c2606685521469f8ef8a6e5db65fef.setIcon(icon_443e2a1c219a4830f474c355372029ce);
+        
+    
+        var popup_0194c06985da42b5918ebc80533c4dcd = L.popup({"maxWidth": 380});
+
+        
+            var html_3eaaa6a5a1e3e4cb94d44174cd9ae5f0 = $(`<div id="html_3eaaa6a5a1e3e4cb94d44174cd9ae5f0" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">8. Sóskút — Dongwha</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Elektrolit + NMP oldószer (újrahaszn.)</div>     </div>     </div>`)[0];
+            popup_0194c06985da42b5918ebc80533c4dcd.setContent(html_3eaaa6a5a1e3e4cb94d44174cd9ae5f0);
+        
+
+        marker_89c2606685521469f8ef8a6e5db65fef.bindPopup(popup_0194c06985da42b5918ebc80533c4dcd)
+        ;
+
+        
+    
+    
+            marker_89c2606685521469f8ef8a6e5db65fef.bindTooltip(
+                `<div>
+                     8. Sóskút — Dongwha
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var feature_group_c8aba0644d58ce26e6fe5b4350323020 = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var marker_a6547240228e1ddc70410b09b21fb31c = L.marker(
+                [47.97, 19.84],
+                {}
+            ).addTo(feature_group_c8aba0644d58ce26e6fe5b4350323020);
+        
+    
+            var icon_8c3ee5c671f9465dbfb979b5f3437d61 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_a6547240228e1ddc70410b09b21fb31c.setIcon(icon_8c3ee5c671f9465dbfb979b5f3437d61);
+        
+    
+        var popup_d2f60382ba379ca095b22037e98f9647 = L.popup({"maxWidth": 380});
+
+        
+            var html_4f7f4df7c55b5df7b8fa0ac0cd1c470a = $(`<div id="html_4f7f4df7c55b5df7b8fa0ac0cd1c470a" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">9. Bátonyterenye — SungEel HiTech</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Akkumulátorhulladék feldolgozás</div>     </div>     </div>`)[0];
+            popup_d2f60382ba379ca095b22037e98f9647.setContent(html_4f7f4df7c55b5df7b8fa0ac0cd1c470a);
+        
+
+        marker_a6547240228e1ddc70410b09b21fb31c.bindPopup(popup_d2f60382ba379ca095b22037e98f9647)
+        ;
+
+        
+    
+    
+            marker_a6547240228e1ddc70410b09b21fb31c.bindTooltip(
+                `<div>
+                     9. Bátonyterenye — SungEel HiTech
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_572be1bd09f603252db551156041bdd7 = L.marker(
+                [47.35, 19.04],
+                {}
+            ).addTo(feature_group_c8aba0644d58ce26e6fe5b4350323020);
+        
+    
+            var icon_5c742ed1b44f196db335bbb0c724e1e5 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_572be1bd09f603252db551156041bdd7.setIcon(icon_5c742ed1b44f196db335bbb0c724e1e5);
+        
+    
+        var popup_ee77e1c47feafcd36554626cd06784e4 = L.popup({"maxWidth": 380});
+
+        
+            var html_0e2b79a691fe9079623c0515610e2c94 = $(`<div id="html_0e2b79a691fe9079623c0515610e2c94" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">10. Szigetszentmiklós — SungEel HiTech</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Telephely/kapcsolódó működés</div>     </div>     </div>`)[0];
+            popup_ee77e1c47feafcd36554626cd06784e4.setContent(html_0e2b79a691fe9079623c0515610e2c94);
+        
+
+        marker_572be1bd09f603252db551156041bdd7.bindPopup(popup_ee77e1c47feafcd36554626cd06784e4)
+        ;
+
+        
+    
+    
+            marker_572be1bd09f603252db551156041bdd7.bindTooltip(
+                `<div>
+                     10. Szigetszentmiklós — SungEel HiTech
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_c27572129f11da0c7e18479992fa027d = L.marker(
+                [47.67, 18.18],
+                {}
+            ).addTo(feature_group_c8aba0644d58ce26e6fe5b4350323020);
+        
+    
+            var icon_05af837e53fee370881b356ca11c65da = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_c27572129f11da0c7e18479992fa027d.setIcon(icon_05af837e53fee370881b356ca11c65da);
+        
+    
+        var popup_735b21ffbc8ba3da106da7aac5de0451 = L.popup({"maxWidth": 380});
+
+        
+            var html_98ad6e011d928d2d28d9dd42f00d74ee = $(`<div id="html_98ad6e011d928d2d28d9dd42f00d74ee" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">11. Mocsa — ÉLTEX</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Hulladékkezelés (telephely)</div>     </div>     </div>`)[0];
+            popup_735b21ffbc8ba3da106da7aac5de0451.setContent(html_98ad6e011d928d2d28d9dd42f00d74ee);
+        
+
+        marker_c27572129f11da0c7e18479992fa027d.bindPopup(popup_735b21ffbc8ba3da106da7aac5de0451)
+        ;
+
+        
+    
+    
+            marker_c27572129f11da0c7e18479992fa027d.bindTooltip(
+                `<div>
+                     11. Mocsa — ÉLTEX
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_673854802bcbe790aaddb3df6c8cd412 = L.marker(
+                [48.1, 19.8],
+                {}
+            ).addTo(feature_group_c8aba0644d58ce26e6fe5b4350323020);
+        
+    
+            var icon_2778f8240877992d7bd2620cd03b503d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_673854802bcbe790aaddb3df6c8cd412.setIcon(icon_2778f8240877992d7bd2620cd03b503d);
+        
+    
+        var popup_7e9238f4ae6e3f26814c4a1ae33aa30f = L.popup({"maxWidth": 380});
+
+        
+            var html_64784bd386859a51071066792c86f377 = $(`<div id="html_64784bd386859a51071066792c86f377" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">12. Salgótarján — ÉLTEX</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Telephely (tárolásról szólt sajtó)</div>     </div>     </div>`)[0];
+            popup_7e9238f4ae6e3f26814c4a1ae33aa30f.setContent(html_64784bd386859a51071066792c86f377);
+        
+
+        marker_673854802bcbe790aaddb3df6c8cd412.bindPopup(popup_7e9238f4ae6e3f26814c4a1ae33aa30f)
+        ;
+
+        
+    
+    
+            marker_673854802bcbe790aaddb3df6c8cd412.bindTooltip(
+                `<div>
+                     12. Salgótarján — ÉLTEX
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_9b1c306d9901d42f9a14375d0cce96cd = L.marker(
+                [47.68, 21.67],
+                {}
+            ).addTo(feature_group_c8aba0644d58ce26e6fe5b4350323020);
+        
+    
+            var icon_c18590f3e8759b7480549f2659c9c81d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_9b1c306d9901d42f9a14375d0cce96cd.setIcon(icon_c18590f3e8759b7480549f2659c9c81d);
+        
+    
+        var popup_54022f5641f49850afef50051b4d86dd = L.popup({"maxWidth": 380});
+
+        
+            var html_2ccbb09bf5b8873d4a32c16725a4044f = $(`<div id="html_2ccbb09bf5b8873d4a32c16725a4044f" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">13. Hajdúhadház — ÉLTEX</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Telephely</div>     </div>     </div>`)[0];
+            popup_54022f5641f49850afef50051b4d86dd.setContent(html_2ccbb09bf5b8873d4a32c16725a4044f);
+        
+
+        marker_9b1c306d9901d42f9a14375d0cce96cd.bindPopup(popup_54022f5641f49850afef50051b4d86dd)
+        ;
+
+        
+    
+    
+            marker_9b1c306d9901d42f9a14375d0cce96cd.bindTooltip(
+                `<div>
+                     13. Hajdúhadház — ÉLTEX
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var feature_group_30e683264cc268c0ef3bc3ba07178b78 = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var marker_dcee8a86f18b41b477afbf98218d6dfb = L.marker(
+                [47.74, 18.12],
+                {}
+            ).addTo(feature_group_30e683264cc268c0ef3bc3ba07178b78);
+        
+    
+            var icon_e904494aca1a7a967454fd3bca362a61 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cubes", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_dcee8a86f18b41b477afbf98218d6dfb.setIcon(icon_e904494aca1a7a967454fd3bca362a61);
+        
+    
+        var popup_77eb10cabd4829c8637eea819fbb9f7d = L.popup({"maxWidth": 380});
+
+        
+            var html_912763c949f0fdbd721b798c3f5bb13b = $(`<div id="html_912763c949f0fdbd721b798c3f5bb13b" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">2.1. Komárom — INZI Controls</div>       <div><b>Kategória:</b> Modul/pack összeszerelés</div>       <div><b>Tevékenység:</b> Modul/pack, vezérlés</div>     </div>     </div>`)[0];
+            popup_77eb10cabd4829c8637eea819fbb9f7d.setContent(html_912763c949f0fdbd721b798c3f5bb13b);
+        
+
+        marker_dcee8a86f18b41b477afbf98218d6dfb.bindPopup(popup_77eb10cabd4829c8637eea819fbb9f7d)
+        ;
+
+        
+    
+    
+            marker_dcee8a86f18b41b477afbf98218d6dfb.bindTooltip(
+                `<div>
+                     2.1. Komárom — INZI Controls
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1c82d723f89c822feca2cf2f007ff3e4 = L.marker(
+                [47.62, 19.19],
+                {}
+            ).addTo(feature_group_30e683264cc268c0ef3bc3ba07178b78);
+        
+    
+            var icon_0b6bf71cecd26cdbdae73dc4cc9f140a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cubes", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_1c82d723f89c822feca2cf2f007ff3e4.setIcon(icon_0b6bf71cecd26cdbdae73dc4cc9f140a);
+        
+    
+        var popup_5e31b727173bb2907d562aa2872b9938 = L.popup({"maxWidth": 380});
+
+        
+            var html_3ee80a37e3bbfa7a407a4dd7cd77dd57 = $(`<div id="html_3ee80a37e3bbfa7a407a4dd7cd77dd57" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">14. Fót — BYD Electric</div>       <div><b>Kategória:</b> Modul/pack összeszerelés</div>       <div><b>Tevékenység:</b> Összeszerelés (Fót is szerepel)</div>     </div>     </div>`)[0];
+            popup_5e31b727173bb2907d562aa2872b9938.setContent(html_3ee80a37e3bbfa7a407a4dd7cd77dd57);
+        
+
+        marker_1c82d723f89c822feca2cf2f007ff3e4.bindPopup(popup_5e31b727173bb2907d562aa2872b9938)
+        ;
+
+        
+    
+    
+            marker_1c82d723f89c822feca2cf2f007ff3e4.bindTooltip(
+                `<div>
+                     14. Fót — BYD Electric
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var feature_group_4d9a1d606a07d330bd90091028edb1bb = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var marker_cluster_1c6da19a0e2bca80b39b8198bff06371 = L.markerClusterGroup(
+                {}
+            );
+            feature_group_4d9a1d606a07d330bd90091028edb1bb.addLayer(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var marker_4e3ddb30aa50f5f2ed56254ce9c66349 = L.marker(
+                [47.68, 19.13],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_d94aa37b6cc55fc0a96aed75ab50443d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_4e3ddb30aa50f5f2ed56254ce9c66349.setIcon(icon_d94aa37b6cc55fc0a96aed75ab50443d);
+        
+    
+        var popup_e2fc61f1a38916c81e21dacdb9bbac4b = L.popup({"maxWidth": 380});
+
+        
+            var html_61c7dce264ff4bb8651f026becda69db = $(`<div id="html_61c7dce264ff4bb8651f026becda69db" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">1. Göd — Samsung SDI</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_e2fc61f1a38916c81e21dacdb9bbac4b.setContent(html_61c7dce264ff4bb8651f026becda69db);
+        
+
+        marker_4e3ddb30aa50f5f2ed56254ce9c66349.bindPopup(popup_e2fc61f1a38916c81e21dacdb9bbac4b)
+        ;
+
+        
+    
+    
+            marker_4e3ddb30aa50f5f2ed56254ce9c66349.bindTooltip(
+                `<div>
+                     1. Göd — Samsung SDI
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_d3872c76d4c6df6b23a7bebed1751380 = L.marker(
+                [47.74, 18.12],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_cfd572bd5d521527d2e9400739a7afde = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_d3872c76d4c6df6b23a7bebed1751380.setIcon(icon_cfd572bd5d521527d2e9400739a7afde);
+        
+    
+        var popup_68cedfaedea94f3bb3519db6deda1c19 = L.popup({"maxWidth": 380});
+
+        
+            var html_fce40b981b905138262a24c8cab0a355 = $(`<div id="html_fce40b981b905138262a24c8cab0a355" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">2. Komárom — SK On Hungary</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_68cedfaedea94f3bb3519db6deda1c19.setContent(html_fce40b981b905138262a24c8cab0a355);
+        
+
+        marker_d3872c76d4c6df6b23a7bebed1751380.bindPopup(popup_68cedfaedea94f3bb3519db6deda1c19)
+        ;
+
+        
+    
+    
+            marker_d3872c76d4c6df6b23a7bebed1751380.bindTooltip(
+                `<div>
+                     2. Komárom — SK On Hungary
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0bf2d664c15999401a3aef08adce0914 = L.marker(
+                [47.74, 18.12],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_bb103e786cd077cb84ee9434355c8aa5 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cubes", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_0bf2d664c15999401a3aef08adce0914.setIcon(icon_bb103e786cd077cb84ee9434355c8aa5);
+        
+    
+        var popup_7d42b86eff0e5a45f650cafb2a4895f2 = L.popup({"maxWidth": 380});
+
+        
+            var html_ff8b9b01657f4b708a30e544c1b95369 = $(`<div id="html_ff8b9b01657f4b708a30e544c1b95369" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">2.1. Komárom — INZI Controls</div>       <div><b>Kategória:</b> Modul/pack összeszerelés</div>       <div><b>Tevékenység:</b> Modul/pack, vezérlés</div>     </div>     </div>`)[0];
+            popup_7d42b86eff0e5a45f650cafb2a4895f2.setContent(html_ff8b9b01657f4b708a30e544c1b95369);
+        
+
+        marker_0bf2d664c15999401a3aef08adce0914.bindPopup(popup_7d42b86eff0e5a45f650cafb2a4895f2)
+        ;
+
+        
+    
+    
+            marker_0bf2d664c15999401a3aef08adce0914.bindTooltip(
+                `<div>
+                     2.1. Komárom — INZI Controls
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_d39fe09948e30e1cf7d00cd31f3c1118 = L.marker(
+                [47.16, 18.82],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_62b09cce8e8838adbd611a7a1ec27fe4 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_d39fe09948e30e1cf7d00cd31f3c1118.setIcon(icon_62b09cce8e8838adbd611a7a1ec27fe4);
+        
+    
+        var popup_a39693c79c2400d61d2b9c79c6958447 = L.popup({"maxWidth": 380});
+
+        
+            var html_1d6c5e127c0fb47b8020f1741215b2a0 = $(`<div id="html_1d6c5e127c0fb47b8020f1741215b2a0" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">3. Iváncsa — SK On Hungary</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_a39693c79c2400d61d2b9c79c6958447.setContent(html_1d6c5e127c0fb47b8020f1741215b2a0);
+        
+
+        marker_d39fe09948e30e1cf7d00cd31f3c1118.bindPopup(popup_a39693c79c2400d61d2b9c79c6958447)
+        ;
+
+        
+    
+    
+            marker_d39fe09948e30e1cf7d00cd31f3c1118.bindTooltip(
+                `<div>
+                     3. Iváncsa — SK On Hungary
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_3d0ef220d29541e030a6383283dbe99d = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_3862eda3adb968827595bdbdd5f42ef7 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_3d0ef220d29541e030a6383283dbe99d.setIcon(icon_3862eda3adb968827595bdbdd5f42ef7);
+        
+    
+        var popup_cf0eea42dcd4d31179c8ecbb58b04fbf = L.popup({"maxWidth": 380});
+
+        
+            var html_998ec5dcb887731b746ec77b1130ccd8 = $(`<div id="html_998ec5dcb887731b746ec77b1130ccd8" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4. Debrecen — CATL</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> Li-ion cella gyártás</div>     </div>     </div>`)[0];
+            popup_cf0eea42dcd4d31179c8ecbb58b04fbf.setContent(html_998ec5dcb887731b746ec77b1130ccd8);
+        
+
+        marker_3d0ef220d29541e030a6383283dbe99d.bindPopup(popup_cf0eea42dcd4d31179c8ecbb58b04fbf)
+        ;
+
+        
+    
+    
+            marker_3d0ef220d29541e030a6383283dbe99d.bindTooltip(
+                `<div>
+                     4. Debrecen — CATL
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_253954d09f204ba399ad8f9461810b3c = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_c5edc405af156f2ab2ccd848aec0b69f = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_253954d09f204ba399ad8f9461810b3c.setIcon(icon_c5edc405af156f2ab2ccd848aec0b69f);
+        
+    
+        var popup_7d6e298f3629c8dad42ee436b1eb91e9 = L.popup({"maxWidth": 380});
+
+        
+            var html_95f69f7bcc6b6d608db18168b612fe20 = $(`<div id="html_95f69f7bcc6b6d608db18168b612fe20" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4.1. Debrecen — EVE / EVE Power</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> BMW-beszállító (cella)</div>     </div>     </div>`)[0];
+            popup_7d6e298f3629c8dad42ee436b1eb91e9.setContent(html_95f69f7bcc6b6d608db18168b612fe20);
+        
+
+        marker_253954d09f204ba399ad8f9461810b3c.bindPopup(popup_7d6e298f3629c8dad42ee436b1eb91e9)
+        ;
+
+        
+    
+    
+            marker_253954d09f204ba399ad8f9461810b3c.bindTooltip(
+                `<div>
+                     4.1. Debrecen — EVE / EVE Power
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_b92d362c566af75f7dc35dbc982f05b1 = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_d8828a102173e4d476ad2af6ea43bb1e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_b92d362c566af75f7dc35dbc982f05b1.setIcon(icon_d8828a102173e4d476ad2af6ea43bb1e);
+        
+    
+        var popup_8491a6e7626adc2912108fa8e5682bf9 = L.popup({"maxWidth": 380});
+
+        
+            var html_7c4c8e57ae39b83783e9ac12dd18e7de = $(`<div id="html_7c4c8e57ae39b83783e9ac12dd18e7de" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4.2. Debrecen — Semcorp</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Szeparátorfólia / elválasztófilm</div>     </div>     </div>`)[0];
+            popup_8491a6e7626adc2912108fa8e5682bf9.setContent(html_7c4c8e57ae39b83783e9ac12dd18e7de);
+        
+
+        marker_b92d362c566af75f7dc35dbc982f05b1.bindPopup(popup_8491a6e7626adc2912108fa8e5682bf9)
+        ;
+
+        
+    
+    
+            marker_b92d362c566af75f7dc35dbc982f05b1.bindTooltip(
+                `<div>
+                     4.2. Debrecen — Semcorp
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_31bc94f7aebc2268b9ed6b1c6051331e = L.marker(
+                [47.53, 21.64],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_43bbbebae84bb64543552376175c864d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_31bc94f7aebc2268b9ed6b1c6051331e.setIcon(icon_43bbbebae84bb64543552376175c864d);
+        
+    
+        var popup_7d4f63dfd276663e24d1589ca506a207 = L.popup({"maxWidth": 380});
+
+        
+            var html_1bbde7dd8e659f1664ff9f5bfcd4d15c = $(`<div id="html_1bbde7dd8e659f1664ff9f5bfcd4d15c" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">4.3. Debrecen — EcoPro BM</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Katódanyag gyártás</div>     </div>     </div>`)[0];
+            popup_7d4f63dfd276663e24d1589ca506a207.setContent(html_1bbde7dd8e659f1664ff9f5bfcd4d15c);
+        
+
+        marker_31bc94f7aebc2268b9ed6b1c6051331e.bindPopup(popup_7d4f63dfd276663e24d1589ca506a207)
+        ;
+
+        
+    
+    
+            marker_31bc94f7aebc2268b9ed6b1c6051331e.bindTooltip(
+                `<div>
+                     4.3. Debrecen — EcoPro BM
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_4a9cce401fabd4e849210f8b47bce208 = L.marker(
+                [47.95, 21.72],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_cb5707cf630e5a6750449c79e2fa58a1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "battery-full", "iconColor": "white", "markerColor": "red", "prefix": "fa"}
+            );
+            marker_4a9cce401fabd4e849210f8b47bce208.setIcon(icon_cb5707cf630e5a6750449c79e2fa58a1);
+        
+    
+        var popup_beee3f90b7bcef81cdaebaf3efddabfa = L.popup({"maxWidth": 380});
+
+        
+            var html_0bad7ca44d7ee84bbf97c32dc72439b9 = $(`<div id="html_0bad7ca44d7ee84bbf97c32dc72439b9" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">5. Nyíregyháza — Sunwoda</div>       <div><b>Kategória:</b> Cella-gyár</div>       <div><b>Tevékenység:</b> EV-akkumulátor üzem (projekt)</div>     </div>     </div>`)[0];
+            popup_beee3f90b7bcef81cdaebaf3efddabfa.setContent(html_0bad7ca44d7ee84bbf97c32dc72439b9);
+        
+
+        marker_4a9cce401fabd4e849210f8b47bce208.bindPopup(popup_beee3f90b7bcef81cdaebaf3efddabfa)
+        ;
+
+        
+    
+    
+            marker_4a9cce401fabd4e849210f8b47bce208.bindTooltip(
+                `<div>
+                     5. Nyíregyháza — Sunwoda
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_6323b0e361f37fadb48d3637224561fd = L.marker(
+                [47.95, 21.72],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_6f6a8c97897b390bc3babdea5853d84b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_6323b0e361f37fadb48d3637224561fd.setIcon(icon_6f6a8c97897b390bc3babdea5853d84b);
+        
+    
+        var popup_26691bd00094dfe84ee2c2ebce761ca1 = L.popup({"maxWidth": 380});
+
+        
+            var html_a8d6f88e4a9865477279482a76aeefc3 = $(`<div id="html_a8d6f88e4a9865477279482a76aeefc3" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">5.1. Nyíregyháza — W-Scope</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Szeparátorfólia (projekt)</div>     </div>     </div>`)[0];
+            popup_26691bd00094dfe84ee2c2ebce761ca1.setContent(html_a8d6f88e4a9865477279482a76aeefc3);
+        
+
+        marker_6323b0e361f37fadb48d3637224561fd.bindPopup(popup_26691bd00094dfe84ee2c2ebce761ca1)
+        ;
+
+        
+    
+    
+            marker_6323b0e361f37fadb48d3637224561fd.bindTooltip(
+                `<div>
+                     5.1. Nyíregyháza — W-Scope
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_55385086d2503d37fdd6d4cc50331f53 = L.marker(
+                [47.57, 18.42],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_c906567e5dbe08e679421bda65018666 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_55385086d2503d37fdd6d4cc50331f53.setIcon(icon_c906567e5dbe08e679421bda65018666);
+        
+    
+        var popup_6cd01c5a640e50a9b6afa99694902bde = L.popup({"maxWidth": 380});
+
+        
+            var html_0c547b3c3aaf47fb9c51e0b38e7cdf39 = $(`<div id="html_0c547b3c3aaf47fb9c51e0b38e7cdf39" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">6. Tatabánya — Soulbrain</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Elektrolit gyártás</div>     </div>     </div>`)[0];
+            popup_6cd01c5a640e50a9b6afa99694902bde.setContent(html_0c547b3c3aaf47fb9c51e0b38e7cdf39);
+        
+
+        marker_55385086d2503d37fdd6d4cc50331f53.bindPopup(popup_6cd01c5a640e50a9b6afa99694902bde)
+        ;
+
+        
+    
+    
+            marker_55385086d2503d37fdd6d4cc50331f53.bindTooltip(
+                `<div>
+                     6. Tatabánya — Soulbrain
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_0359faa183cea49f743f4b1583602242 = L.marker(
+                [47.55, 18.32],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_5e50f6660e13d50f9bd5f2543e2f1456 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_0359faa183cea49f743f4b1583602242.setIcon(icon_5e50f6660e13d50f9bd5f2543e2f1456);
+        
+    
+        var popup_b0a179f563c9b50139bd156a14864050 = L.popup({"maxWidth": 380});
+
+        
+            var html_bf3693cfeec4a94e7f01f7eb30bbecf0 = $(`<div id="html_bf3693cfeec4a94e7f01f7eb30bbecf0" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">6.1. Környe — Lotte Aluminium</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Áramgyűjtő fólia (telephely/térség)</div>     </div>     </div>`)[0];
+            popup_b0a179f563c9b50139bd156a14864050.setContent(html_bf3693cfeec4a94e7f01f7eb30bbecf0);
+        
+
+        marker_0359faa183cea49f743f4b1583602242.bindPopup(popup_b0a179f563c9b50139bd156a14864050)
+        ;
+
+        
+    
+    
+            marker_0359faa183cea49f743f4b1583602242.bindTooltip(
+                `<div>
+                     6.1. Környe — Lotte Aluminium
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_d5f1c67dea94f375d2c59416f2a2af49 = L.marker(
+                [47.41, 18.82],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_597994b0cf06a5e8103e02aaf4abf6dd = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cogs", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_d5f1c67dea94f375d2c59416f2a2af49.setIcon(icon_597994b0cf06a5e8103e02aaf4abf6dd);
+        
+    
+        var popup_c74890e01bdd8ced3995fd5ea01e5647 = L.popup({"maxWidth": 380});
+
+        
+            var html_643487ca41fcbf1376d4b0e6bb9ef668 = $(`<div id="html_643487ca41fcbf1376d4b0e6bb9ef668" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">8. Sóskút — Dongwha</div>       <div><b>Kategória:</b> Beszállító/anyag</div>       <div><b>Tevékenység:</b> Elektrolit + NMP oldószer (újrahaszn.)</div>     </div>     </div>`)[0];
+            popup_c74890e01bdd8ced3995fd5ea01e5647.setContent(html_643487ca41fcbf1376d4b0e6bb9ef668);
+        
+
+        marker_d5f1c67dea94f375d2c59416f2a2af49.bindPopup(popup_c74890e01bdd8ced3995fd5ea01e5647)
+        ;
+
+        
+    
+    
+            marker_d5f1c67dea94f375d2c59416f2a2af49.bindTooltip(
+                `<div>
+                     8. Sóskút — Dongwha
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1f7a7b19fe775f60b65160b350afc46a = L.marker(
+                [47.97, 19.84],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_c99dbc942af8266bb3389e38783c6b82 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_1f7a7b19fe775f60b65160b350afc46a.setIcon(icon_c99dbc942af8266bb3389e38783c6b82);
+        
+    
+        var popup_d2aecb431974623dac83094f69748ffb = L.popup({"maxWidth": 380});
+
+        
+            var html_e67bdd4d95dc488b5a36f15aa6aef51f = $(`<div id="html_e67bdd4d95dc488b5a36f15aa6aef51f" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">9. Bátonyterenye — SungEel HiTech</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Akkumulátorhulladék feldolgozás</div>     </div>     </div>`)[0];
+            popup_d2aecb431974623dac83094f69748ffb.setContent(html_e67bdd4d95dc488b5a36f15aa6aef51f);
+        
+
+        marker_1f7a7b19fe775f60b65160b350afc46a.bindPopup(popup_d2aecb431974623dac83094f69748ffb)
+        ;
+
+        
+    
+    
+            marker_1f7a7b19fe775f60b65160b350afc46a.bindTooltip(
+                `<div>
+                     9. Bátonyterenye — SungEel HiTech
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_53869da542919383e5ba84eed8f463e3 = L.marker(
+                [47.35, 19.04],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_d04045f6d73af881395a190aac333f59 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_53869da542919383e5ba84eed8f463e3.setIcon(icon_d04045f6d73af881395a190aac333f59);
+        
+    
+        var popup_2f2d026ec942c0a81f64506efc18e510 = L.popup({"maxWidth": 380});
+
+        
+            var html_0b803c6f3e448332dbd58cf9aea70e44 = $(`<div id="html_0b803c6f3e448332dbd58cf9aea70e44" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">10. Szigetszentmiklós — SungEel HiTech</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Telephely/kapcsolódó működés</div>     </div>     </div>`)[0];
+            popup_2f2d026ec942c0a81f64506efc18e510.setContent(html_0b803c6f3e448332dbd58cf9aea70e44);
+        
+
+        marker_53869da542919383e5ba84eed8f463e3.bindPopup(popup_2f2d026ec942c0a81f64506efc18e510)
+        ;
+
+        
+    
+    
+            marker_53869da542919383e5ba84eed8f463e3.bindTooltip(
+                `<div>
+                     10. Szigetszentmiklós — SungEel HiTech
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_33725f7e7eb1e22c7c73852cc6500524 = L.marker(
+                [47.67, 18.18],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_c4d71f649384f3e1a9ee956bc2d5ca51 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_33725f7e7eb1e22c7c73852cc6500524.setIcon(icon_c4d71f649384f3e1a9ee956bc2d5ca51);
+        
+    
+        var popup_e9bbd2dcabb874060022aa44166abc94 = L.popup({"maxWidth": 380});
+
+        
+            var html_7514c072bf576c77c358ff4aacd96baa = $(`<div id="html_7514c072bf576c77c358ff4aacd96baa" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">11. Mocsa — ÉLTEX</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Hulladékkezelés (telephely)</div>     </div>     </div>`)[0];
+            popup_e9bbd2dcabb874060022aa44166abc94.setContent(html_7514c072bf576c77c358ff4aacd96baa);
+        
+
+        marker_33725f7e7eb1e22c7c73852cc6500524.bindPopup(popup_e9bbd2dcabb874060022aa44166abc94)
+        ;
+
+        
+    
+    
+            marker_33725f7e7eb1e22c7c73852cc6500524.bindTooltip(
+                `<div>
+                     11. Mocsa — ÉLTEX
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_97163b93126991ce5b122fb0fb3a0cbe = L.marker(
+                [48.1, 19.8],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_b14822dcb3c7d8bf6df7d939df071ce7 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_97163b93126991ce5b122fb0fb3a0cbe.setIcon(icon_b14822dcb3c7d8bf6df7d939df071ce7);
+        
+    
+        var popup_77f2e38d993740f8503a235108d83b0b = L.popup({"maxWidth": 380});
+
+        
+            var html_6c94d11551598f18b9775ecd6d67e8e1 = $(`<div id="html_6c94d11551598f18b9775ecd6d67e8e1" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">12. Salgótarján — ÉLTEX</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Telephely (tárolásról szólt sajtó)</div>     </div>     </div>`)[0];
+            popup_77f2e38d993740f8503a235108d83b0b.setContent(html_6c94d11551598f18b9775ecd6d67e8e1);
+        
+
+        marker_97163b93126991ce5b122fb0fb3a0cbe.bindPopup(popup_77f2e38d993740f8503a235108d83b0b)
+        ;
+
+        
+    
+    
+            marker_97163b93126991ce5b122fb0fb3a0cbe.bindTooltip(
+                `<div>
+                     12. Salgótarján — ÉLTEX
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_56a8178de843d439b595d32fcd4fd7b6 = L.marker(
+                [47.68, 21.67],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_1be5ca9bb7691e96ec15f691b6caaa9b = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "recycle", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_56a8178de843d439b595d32fcd4fd7b6.setIcon(icon_1be5ca9bb7691e96ec15f691b6caaa9b);
+        
+    
+        var popup_e329dcfa8b8ed9521a70e47c19afe234 = L.popup({"maxWidth": 380});
+
+        
+            var html_12c28789b6db8caedcf034900a0c282c = $(`<div id="html_12c28789b6db8caedcf034900a0c282c" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">13. Hajdúhadház — ÉLTEX</div>       <div><b>Kategória:</b> Hulladék/újrahasznosítás</div>       <div><b>Tevékenység:</b> Telephely</div>     </div>     </div>`)[0];
+            popup_e329dcfa8b8ed9521a70e47c19afe234.setContent(html_12c28789b6db8caedcf034900a0c282c);
+        
+
+        marker_56a8178de843d439b595d32fcd4fd7b6.bindPopup(popup_e329dcfa8b8ed9521a70e47c19afe234)
+        ;
+
+        
+    
+    
+            marker_56a8178de843d439b595d32fcd4fd7b6.bindTooltip(
+                `<div>
+                     13. Hajdúhadház — ÉLTEX
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_db0dbfd0d2ec0f27d03de3db5f59bf69 = L.marker(
+                [47.62, 19.19],
+                {}
+            ).addTo(marker_cluster_1c6da19a0e2bca80b39b8198bff06371);
+        
+    
+            var icon_b20c03500f3a52cce09aae4c87e4181f = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "cubes", "iconColor": "white", "markerColor": "orange", "prefix": "fa"}
+            );
+            marker_db0dbfd0d2ec0f27d03de3db5f59bf69.setIcon(icon_b20c03500f3a52cce09aae4c87e4181f);
+        
+    
+        var popup_5da72f7bcfced46dcfbbae75f67b5f74 = L.popup({"maxWidth": 380});
+
+        
+            var html_9c43b448fecb231af9a66fd79bf98d6e = $(`<div id="html_9c43b448fecb231af9a66fd79bf98d6e" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial; font-size: 13px; line-height: 1.25;">       <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">14. Fót — BYD Electric</div>       <div><b>Kategória:</b> Modul/pack összeszerelés</div>       <div><b>Tevékenység:</b> Összeszerelés (Fót is szerepel)</div>     </div>     </div>`)[0];
+            popup_5da72f7bcfced46dcfbbae75f67b5f74.setContent(html_9c43b448fecb231af9a66fd79bf98d6e);
+        
+
+        marker_db0dbfd0d2ec0f27d03de3db5f59bf69.bindPopup(popup_5da72f7bcfced46dcfbbae75f67b5f74)
+        ;
+
+        
+    
+    
+            marker_db0dbfd0d2ec0f27d03de3db5f59bf69.bindTooltip(
+                `<div>
+                     14. Fót — BYD Electric
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var feature_group_5616a5faa2f9671d25e9c60f2516fcfb = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var poly_line_54a8181c9e07d226cc40847f0a58c641 = L.polyline(
+                [[47.85, 17.35], [47.75, 18.1], [47.5, 19.05], [46.25, 18.95], [45.95, 18.75]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            poly_line_54a8181c9e07d226cc40847f0a58c641.bindTooltip(
+                `<div>
+                     Duna (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_0faea796ae7a0701e1bb4ddded60e854 = L.polyline(
+                [[48.15, 22.1], [47.95, 21.7], [47.55, 21.65], [47.2, 21.2], [46.25, 20.15]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            poly_line_0faea796ae7a0701e1bb4ddded60e854.bindTooltip(
+                `<div>
+                     Tisza (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_8fe19ea11bcd4dd716732aa9b427748e = L.polyline(
+                [[46.35, 16.9], [46.2, 17.7], [46.05, 18.2]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.85, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            poly_line_8fe19ea11bcd4dd716732aa9b427748e.bindTooltip(
+                `<div>
+                     Dráva (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_e9e46be16b83575d0e813a0cf1abac33 = L.polyline(
+                [[47.65, 16.6], [47.2, 17.1], [46.95, 17.8]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.85, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            poly_line_e9e46be16b83575d0e813a0cf1abac33.bindTooltip(
+                `<div>
+                     Rába (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var polygon_53f3c9a2bf802328c8195d8a20adf50e = L.polygon(
+                [[46.8, 17.15], [46.92, 17.55], [46.9, 18.1], [46.74, 18.05], [46.75, 17.35]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            polygon_53f3c9a2bf802328c8195d8a20adf50e.bindTooltip(
+                `<div>
+                     Balaton (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var polygon_de8064cf0420527da56539875cec47af = L.polygon(
+                [[47.55, 20.5], [47.62, 20.7], [47.55, 20.9], [47.48, 20.7]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            polygon_de8064cf0420527da56539875cec47af.bindTooltip(
+                `<div>
+                     Tisza-tó (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var polygon_53d81a8bb3a63525e94f881de2261aa7 = L.polygon(
+                [[47.25, 18.55], [47.29, 18.6], [47.26, 18.68], [47.22, 18.62]],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#3388ff", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(feature_group_5616a5faa2f9671d25e9c60f2516fcfb);
+        
+    
+            polygon_53d81a8bb3a63525e94f881de2261aa7.bindTooltip(
+                `<div>
+                     Velencei-tó (vázlat)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var feature_group_a8dd62209c12bb84b46c34b4c64161a0 = L.featureGroup(
+                {}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+        
+    
+            var circle_marker_e991d357d927c081cde0e4fb9c054d45 = L.circleMarker(
+                [47.68, 19.13],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 8.240220541217404, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_e991d357d927c081cde0e4fb9c054d45.bindTooltip(
+                `<div>
+                     Göd — ~22 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_9a8d3ff8d764c988f84374061d6de37d = L.circleMarker(
+                [47.74, 18.12],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 7.6578048622723465, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_9a8d3ff8d764c988f84374061d6de37d.bindTooltip(
+                `<div>
+                     Komárom — ~19 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_c3b705f18fcad1ada9ac16a58e42fba3 = L.circleMarker(
+                [47.16, 18.82],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_c3b705f18fcad1ada9ac16a58e42fba3.bindTooltip(
+                `<div>
+                     Iváncsa — ~3 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_01251d8aca09b911a2faeed53d8d4c76 = L.circleMarker(
+                [47.53, 21.64],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 24.84519974999766, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_01251d8aca09b911a2faeed53d8d4c76.bindTooltip(
+                `<div>
+                     Debrecen — ~200 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_3fd34c6d8a27abdada3ee1a7f88b4edc = L.circleMarker(
+                [47.95, 21.72],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 19.083960041464074, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_3fd34c6d8a27abdada3ee1a7f88b4edc.bindTooltip(
+                `<div>
+                     Nyíregyháza — ~118 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_1e9c1e27de61255cee3fa7f2b110d998 = L.circleMarker(
+                [47.57, 18.42],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 14.272480642961256, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_1e9c1e27de61255cee3fa7f2b110d998.bindTooltip(
+                `<div>
+                     Tatabánya — ~66 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_5127632ff1f665b6e93dc43c9e86d7d9 = L.circleMarker(
+                [47.55, 18.32],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_5127632ff1f665b6e93dc43c9e86d7d9.bindTooltip(
+                `<div>
+                     Környe — ~4 700 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_1dc992e91c9734c518a674ea331c0fda = L.circleMarker(
+                [47.41, 18.82],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_1dc992e91c9734c518a674ea331c0fda.bindTooltip(
+                `<div>
+                     Sóskút — ~3 600 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_4b3aedf4d51042eab042469d5c86d2ee = L.circleMarker(
+                [47.97, 19.84],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 6.085806194501846, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_4b3aedf4d51042eab042469d5c86d2ee.bindTooltip(
+                `<div>
+                     Bátonyterenye — ~12 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_1f36294688d0636f97bf7c3ee80151f0 = L.circleMarker(
+                [47.35, 19.04],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 11.11111111111111, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_1f36294688d0636f97bf7c3ee80151f0.bindTooltip(
+                `<div>
+                     Szigetszentmiklós — ~40 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_9d18c7ed6670e7faaacef57f4290287d = L.circleMarker(
+                [47.67, 18.18],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_9d18c7ed6670e7faaacef57f4290287d.bindTooltip(
+                `<div>
+                     Mocsa — ~2 100 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_ad93c2f51b6ea041f9ffd400549fcdbc = L.circleMarker(
+                [48.1, 19.8],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 10.243938285880986, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_ad93c2f51b6ea041f9ffd400549fcdbc.bindTooltip(
+                `<div>
+                     Salgótarján — ~34 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_953f94797169a6150d05aae651d2ef6b = L.circleMarker(
+                [47.68, 21.67],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 6.3343079172174335, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_953f94797169a6150d05aae651d2ef6b.bindTooltip(
+                `<div>
+                     Hajdúhadház — ~13 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_faea7747cc3364d4162abfeeeff62781 = L.circleMarker(
+                [47.62, 19.19],
+                {"bubblingMouseEvents": true, "color": "#3388ff", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3388ff", "fillOpacity": 0.35, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.9, "radius": 7.856742013183862, "stroke": true, "weight": 3}
+            ).addTo(feature_group_a8dd62209c12bb84b46c34b4c64161a0);
+        
+    
+            circle_marker_faea7747cc3364d4162abfeeeff62781.bindTooltip(
+                `<div>
+                     Fót — ~20 000 fő (becsült)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var layer_control_3e53c1493a36aaedc5dec8d4b8b2297c = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_fea502f2133216f40b6010620550115d,
+                    "OSM (alap)" : tile_layer_cb70d63d7c59a128f03746efa2d18f4d,
+                    "Vil\u00e1gos (Positron)" : tile_layer_b71997be00e7535c42ce4b9f739a3797,
+                    "Domborzat (Topo)" : tile_layer_db8cef68a81ea6458193cf1ce6147a15,
+                    "M\u0171hold (Esri)" : tile_layer_70fff39c53a424d31bd8a1bfdfdb3170,
+                },
+                overlays :  {
+                    "Cella-gy\u00e1r" : feature_group_43db20f03e440113c8e3a5499db56557,
+                    "Besz\u00e1ll\u00edt\u00f3/anyag" : feature_group_026a6ec99d63e3e9833cf2423a605fb8,
+                    "Hullad\u00e9k/\u00fajrahasznos\u00edt\u00e1s" : feature_group_c8aba0644d58ce26e6fe5b4350323020,
+                    "Modul/pack \u00f6sszeszerel\u00e9s" : feature_group_30e683264cc268c0ef3bc3ba07178b78,
+                    "\u00d6sszes pont (klaszter)" : feature_group_4d9a1d606a07d330bd90091028edb1bb,
+                    "Vizek / v\u00edzb\u00e1zis (f\u0151 foly\u00f3k + tavak)" : feature_group_5616a5faa2f9671d25e9c60f2516fcfb,
+                    "Lakoss\u00e1g-bubor\u00e9kok (ar\u00e1nyos, becs\u00fclt)" : feature_group_a8dd62209c12bb84b46c34b4c64161a0,
+                },
+            };
+            L.control.layers(
+                layer_control_3e53c1493a36aaedc5dec8d4b8b2297c.base_layers,
+                layer_control_3e53c1493a36aaedc5dec8d4b8b2297c.overlays,
+                {"autoZIndex": true, "collapsed": false, "position": "topright"}
+            ).addTo(map_59b92bc093897049de03bb19d06aa8dd);
+            tile_layer_cb70d63d7c59a128f03746efa2d18f4d.remove();
+            tile_layer_b71997be00e7535c42ce4b9f739a3797.remove();
+            tile_layer_db8cef68a81ea6458193cf1ce6147a15.remove();
+            tile_layer_70fff39c53a424d31bd8a1bfdfdb3170.remove();
+            feature_group_4d9a1d606a07d330bd90091028edb1bb.remove();
+            feature_group_5616a5faa2f9671d25e9c60f2516fcfb.remove();
+            feature_group_a8dd62209c12bb84b46c34b4c64161a0.remove();
+        
+</script>
+</html>
