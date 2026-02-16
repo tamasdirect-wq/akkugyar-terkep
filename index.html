@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Akkumulátoripari térkép (HU)</title>
+
+  <!-- Leaflet (stabilabb, frissebb) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Font Awesome + Awesome Markers -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.js"></script>
+
+  <!-- MarkerCluster (frissebb, stabil) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <style>
+    html, body { width:100%; height:100%; margin:0; padding:0; }
+    #map { position:absolute; inset:0; }
+
+    /* Felső cím csík */
+    .top-title {
+      position: fixed;
+      top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(0,0,0,0.74);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.28);
+      pointer-events: none;
+    }
+
+    /* Legend */
+    .legend-box {
+      position: fixed;
+      bottom: 18px; left: 18px;
+      width: 360px;
+      z-index: 9999;
+      background: rgba(255,255,255,0.95);
+      padding: 12px 12px;
+      border-radius: 14px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.28);
+      font-family: Arial, sans-serif;
+    }
+    .legend-title { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
+    .legend-sub { font-size: 12px; color:#333; margin-bottom: 8px; }
+    .legend-row { display:flex; align-items:center; margin:6px 0; font-size: 13px; }
+    .legend-swatch { width:12px; height:12px; border-radius:3px; margin-right:8px; }
+    .legend-foot { margin-top:8px; padding-top:8px; border-top:1px solid rgba(0,0,0,0.08); font-size: 12px; }
+    .legend-note { font-size: 11px; color:#666; margin-top:6px; }
+
+    /* Popup finomítás */
+    .popwrap { font-family: Arial, sans-serif; font-size: 13px; line-height: 1.25; }
+    .popwrap .poptitle { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+  </style>
+</head>
+
+<body>
+  <div class="top-title">Magyarország – akkumulátoripari üzemek + vizek + lakosság</div>
+
+  <div class="legend-box">
+    <div class="legend-title">Akkumulátoripari térkép (HU) – 2026.02.11</div>
+    <div class="legend-sub">Rétegek: jobb felül. Basemap: választható (OSM / domborzat / műhold).</div>
+
+    <div class="legend-row">
+      <span class="legend-swatch" style="background:#d9534f"></span>
+      <span><b>Cella-gyár</b></span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-swatch" style="background:#337ab7"></span>
+      <span><b>Beszállító/anyag</b></span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-swatch" style="background:#5cb85c"></span>
+      <span><b>Hulladék/újrahaszn.</b></span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-swatch" style="background:#f0ad4e"></span>
+      <span><b>Modul/pack</b></span>
+    </div>
+
+    <div class="legend-foot">
+      <b>Plusz rétegek:</b> „Vizek / vízbázis” és „Lakosság-buborékok”.
+    </div>
+    <div class="legend-note">
+      Megjegyzés: a vízréteg vázlatos (fő folyók/tavak), a buborékok lakossága kerekített becslés.
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    // =========================
+    // MAP INIT
+    // =========================
+    const map = L.map("map", {
+      center: [47.2, 19.5],
+      zoom: 7,
+      zoomControl: true,
+      preferCanvas: false
+    });
+    L.control.scale().addTo(map);
+
+    // =========================
+    // BASE LAYERS (csak 1 van alapból a map-on!)
+    // =========================
+    const baseLight = L.tileLayer(
+      "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      { attribution: '&copy; OpenStreetMap contributors &copy; CartoDB', maxZoom: 19 }
+    ).addTo(map);
+
+    const baseOSM = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { attribution: '&copy; OpenStreetMap', maxZoom: 19 }
+    );
+
+    const baseTopo = L.tileLayer(
+      "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      { attribution: 'OpenTopoMap', maxZoom: 17 }
+    );
+
+    const baseSat = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      { attribution: 'Esri', maxZoom: 19 }
+    );
+
+    // =========================
+    // OVERLAY GROUPS
+    // =========================
+    const fgCells     = L.featureGroup(); // Cella-gyár
+    const fgSuppliers = L.featureGroup(); // Beszállító/anyag
+    const fgWaste     = L.featureGroup(); // Hulladék/újrahaszn.
+    const fgModules   = L.featureGroup(); // Modul/pack
+    const fgWaters    = L.featureGroup(); // Vizek
+    const fgPop       = L.featureGroup(); // Lakosság
+
+    // Cluster overlay (összes pont)
+    const fgClusterWrap = L.featureGroup();
+    const cluster = L.markerClusterGroup();
+    fgClusterWrap.addLayer(cluster);
+
+    // =========================
+    // HELPERS
+    // =========================
+    function iconAwesome(markerColor, faIcon) {
+      return L.AwesomeMarkers.icon({
+        icon: faIcon,
+        prefix: "fa",
+        markerColor: markerColor,
+        iconColor: "white"
+      });
+    }
+
+    function popupHtml(title, category, activity) {
+      return `
+        <div class="popwrap">
+          <div class="poptitle">${title}</div>
+          <div><b>Kategória:</b> ${category}</div>
+          <div><b>Tevékenység:</b> ${activity}</div>
+        </div>
+      `;
+    }
+
+    function addPOI(group, lat, lng, markerColor, faIcon, title, category, activity) {
+      const m = L.marker([lat, lng], { icon: iconAwesome(markerColor, faIcon) });
+      m.bindPopup(popupHtml(title, category, activity), { maxWidth: 380 });
+      m.bindTooltip(title, { sticky: true });
+      group.addLayer(m);
+
+      // ugyanaz a marker megy a cluster overlay-be is
+      const m2 = L.marker([lat, lng], { icon: iconAwesome(markerColor, faIcon) });
+      m2.bindPopup(popupHtml(title, category, activity), { maxWidth: 380 });
+      m2.bindTooltip(title, { sticky: true });
+      cluster.addLayer(m2);
+    }
+
+    function addPopCircle(lat, lng, label, radius) {
+      const c = L.circleMarker([lat, lng], {
+        color: "#3388ff",
+        weight: 3,
+        opacity: 0.9,
+        fillColor: "#3388ff",
+        fillOpacity: 0.35,
+        radius: radius
+      });
+      c.bindTooltip(label, { sticky: true });
+      fgPop.addLayer(c);
+    }
+
+    // =========================
+    // DATA: Cella-gyár (piros, battery-full)
+    // =========================
+    addPOI(fgCells, 47.68, 19.13, "red", "battery-full", "1. Göd — Samsung SDI", "Cella-gyár", "Li-ion cella gyártás");
+    addPOI(fgCells, 47.74, 18.12, "red", "battery-full", "2. Komárom — SK On Hungary", "Cella-gyár", "Li-ion cella gyártás");
+    addPOI(fgCells, 47.16, 18.82, "red", "battery-full", "3. Iváncsa — SK On Hungary", "Cella-gyár", "Li-ion cella gyártás");
+    addPOI(fgCells, 47.53, 21.64, "red", "battery-full", "4. Debrecen — CATL", "Cella-gyár", "Li-ion cella gyártás");
+    addPOI(fgCells, 47.53, 21.64, "red", "battery-full", "4.1. Debrecen — EVE / EVE Power", "Cella-gyár", "BMW-beszállító (cella)");
+    addPOI(fgCells, 47.95, 21.72, "red", "battery-full", "5. Nyíregyháza — Sunwoda", "Cella-gyár", "EV-akkumulátor üzem (projekt)");
+
+    // =========================
+    // DATA: Beszállító/anyag (kék, cogs)
+    // =========================
+    addPOI(fgSuppliers, 47.53, 21.64, "blue", "cogs", "4.2. Debrecen — Semcorp", "Beszállító/anyag", "Szeparátorfólia / elválasztófilm");
+    addPOI(fgSuppliers, 47.53, 21.64, "blue", "cogs", "4.3. Debrecen — EcoPro BM", "Beszállító/anyag", "Katódanyag gyártás");
+    addPOI(fgSuppliers, 47.95, 21.72, "blue", "cogs", "5.1. Nyíregyháza — W-Scope", "Beszállító/anyag", "Szeparátorfólia (projekt)");
+    addPOI(fgSuppliers, 47.57, 18.42, "blue", "cogs", "6. Tatabánya — Soulbrain", "Beszállító/anyag", "Elektrolit gyártás");
+    addPOI(fgSuppliers, 47.55, 18.32, "blue", "cogs", "6.1. Környe — Lotte Aluminium", "Beszállító/anyag", "Áramgyűjtő fólia (telephely/térség)");
+    addPOI(fgSuppliers, 47.41, 18.82, "blue", "cogs", "8. Sóskút — Dongwha", "Beszállító/anyag", "Elektrolit + NMP oldószer (újrahaszn.)");
+
+    // =========================
+    // DATA: Hulladék/újrahaszn. (zöld, recycle)
+    // =========================
+    addPOI(fgWaste, 47.97, 19.84, "green", "recycle", "9. Bátonyterenye — SungEel HiTech", "Hulladék/újrahasznosítás", "Akkumulátorhulladék feldolgozás");
+    addPOI(fgWaste, 47.35, 19.04, "green", "recycle", "10. Szigetszentmiklós — SungEel HiTech", "Hulladék/újrahasznosítás", "Telephely/kapcsolódó működés");
+    addPOI(fgWaste, 47.67, 18.18, "green", "recycle", "11. Mocsa — ÉLTEX", "Hulladék/újrahasznosítás", "Hulladékkezelés (telephely)");
+    addPOI(fgWaste, 48.10, 19.80, "green", "recycle", "12. Salgótarján — ÉLTEX", "Hulladék/újrahasznosítás", "Telephely (tárolásról szólt sajtó)");
+    addPOI(fgWaste, 47.68, 21.67, "green", "recycle", "13. Hajdúhadház — ÉLTEX", "Hulladék/újrahasznosítás", "Telephely");
+
+    // =========================
+    // DATA: Modul/pack (narancs, cubes)
+    // =========================
+    addPOI(fgModules, 47.74, 18.12, "orange", "cubes", "2.1. Komárom — INZI Controls", "Modul/pack összeszerelés", "Modul/pack, vezérlés");
+    addPOI(fgModules, 47.62, 19.19, "orange", "cubes", "14. Fót — BYD Electric", "Modul/pack összeszerelés", "Összeszerelés (Fót is szerepel)");
+
+    // =========================
+    // VIZEK / vízbázis (vázlat)
+    // =========================
+    L.polyline([[47.85, 17.35],[47.75, 18.10],[47.50, 19.05],[46.25, 18.95],[45.95, 18.75]], {
+      color:"#3388ff", weight:4, opacity:0.9
+    }).bindTooltip("Duna (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    L.polyline([[48.15, 22.10],[47.95, 21.70],[47.55, 21.65],[47.20, 21.20],[46.25, 20.15]], {
+      color:"#3388ff", weight:4, opacity:0.9
+    }).bindTooltip("Tisza (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    L.polyline([[46.35, 16.90],[46.20, 17.70],[46.05, 18.20]], {
+      color:"#3388ff", weight:3, opacity:0.85
+    }).bindTooltip("Dráva (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    L.polyline([[47.65, 16.60],[47.20, 17.10],[46.95, 17.80]], {
+      color:"#3388ff", weight:3, opacity:0.85
+    }).bindTooltip("Rába (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    L.polygon([[46.80, 17.15],[46.92, 17.55],[46.90, 18.10],[46.74, 18.05],[46.75, 17.35]], {
+      color:"#3388ff", weight:3, opacity:0.6, fill:false
+    }).bindTooltip("Balaton (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    L.polygon([[47.55, 20.50],[47.62, 20.70],[47.55, 20.90],[47.48, 20.70]], {
+      color:"#3388ff", weight:3, opacity:0.6, fill:false
+    }).bindTooltip("Tisza-tó (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    L.polygon([[47.25, 18.55],[47.29, 18.60],[47.26, 18.68],[47.22, 18.62]], {
+      color:"#3388ff", weight:3, opacity:0.6, fill:false
+    }).bindTooltip("Velencei-tó (vázlat)", {sticky:true}).addTo(fgWaters);
+
+    // =========================
+    // Lakosság-buborékok (a te sugaraiddal)
+    // =========================
+    addPopCircle(47.68, 19.13, "Göd — ~22 000 fő (becsült)", 8.240220541217404);
+    addPopCircle(47.74, 18.12, "Komárom — ~19 000 fő (becsült)", 7.6578048622723465);
+    addPopCircle(47.16, 18.82, "Iváncsa — ~3 000 fő (becsült)", 6);
+    addPopCircle(47.53, 21.64, "Debrecen — ~200 000 fő (becsült)", 24.84519974999766);
+    addPopCircle(47.95, 21.72, "Nyíregyháza — ~118 000 fő (becsült)", 19.083960041464074);
+    addPopCircle(47.57, 18.42, "Tatabánya — ~66 000 fő (becsült)", 14.272480642961256);
+    addPopCircle(47.55, 18.32, "Környe — ~4 700 fő (becsült)", 6);
+    addPopCircle(47.41, 18.82, "Sóskút — ~3 600 fő (becsült)", 6);
+    addPopCircle(47.97, 19.84, "Bátonyterenye — ~12 000 fő (becsült)", 6.085806194501846);
+    addPopCircle(47.35, 19.04, "Szigetszentmiklós — ~40 000 fő (becsült)", 11.11111111111111);
+    addPopCircle(47.67, 18.18, "Mocsa — ~2 100 fő (becsült)", 6);
+    addPopCircle(48.10, 19.80, "Salgótarján — ~34 000 fő (becsült)", 10.243938285880986);
+    addPopCircle(47.68, 21.67, "Hajdúhadház — ~13 000 fő (becsült)", 6.3343079172174335);
+    addPopCircle(47.62, 19.19, "Fót — ~20 000 fő (becsült)", 7.856742013183862);
+
+    // =========================
+    // LAYER CONTROL (collapsed=true = nem zabálja ki a képernyőt)
+    // Default ON: Cella + Beszállító + Hulladék + Modul (ízlés szerint)
+    // =========================
+    fgCells.addTo(map);
+    fgSuppliers.addTo(map);
+    fgWaste.addTo(map);
+    fgModules.addTo(map);
+    // fgWaters és fgPop alapból OFF, de kapcsolható
+
+    const baseLayers = {
+      "Világos (Carto)": baseLight,
+      "OSM (alap)": baseOSM,
+      "Domborzat (Topo)": baseTopo,
+      "Műhold (Esri)": baseSat
+    };
+
+    const overlays = {
+      "Cella-gyár": fgCells,
+      "Beszállító/anyag": fgSuppliers,
+      "Hulladék/újrahasznosítás": fgWaste,
+      "Modul/pack összeszerelés": fgModules,
+      "Összes pont (klaszter)": fgClusterWrap,
+      "Vizek / vízbázis (fő folyók + tavak)": fgWaters,
+      "Lakosság-buborékok (arányos, becsült)": fgPop
+    };
+
+    L.control.layers(baseLayers, overlays, { collapsed: true, position: "topright" }).addTo(map);
+  </script>
+</body>
+</html>
